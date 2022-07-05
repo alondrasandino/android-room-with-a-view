@@ -17,17 +17,28 @@ package com.example.android.roomwordssample;
  */
 
 import android.content.Context;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.List;
 
 
 public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
+
+    private Context context;
+    private HandleWordClick clickListener;
+
 
     class WordViewHolder extends RecyclerView.ViewHolder {
         private final TextView wordItemView;
@@ -52,14 +63,61 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
     }
 
     @Override
-    public void onBindViewHolder(WordViewHolder holder, int position) {
-        Word current = mWords.get(position);
+    public void onBindViewHolder(@NonNull WordViewHolder holder, int position) {
+        final Word current = mWords.get(position);
         holder.wordItemView.setText(current.getWord());
+
+        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+            GestureDetector gestureDetector = new GestureDetector(context.getApplicationContext(),
+                    new GestureDetector.SimpleOnGestureListener() {
+
+                        @Override
+                        public boolean onDoubleTap(MotionEvent e) {
+                            clickListener.editItem(current);
+                            return super.onDoubleTap(e);
+                        }
+                    });
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                gestureDetector.onTouchEvent(motionEvent);
+                return false;
+            }
+        });
+        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+            GestureDetector gestureDetector = new GestureDetector(context.getApplicationContext(),
+                    new GestureDetector.SimpleOnGestureListener() {
+
+                        @Override
+                        public boolean onDoubleTap(MotionEvent e) {
+                            clickListener.editItem(current);
+                            return super.onDoubleTap(e);
+                        }
+                        @Override
+                        public boolean onSingleTapConfirmed(MotionEvent e) {
+                            Toast.makeText(context, "Doble tap para actualizar y agregar imagen", Toast.LENGTH_LONG).show();
+                            return super.onSingleTapConfirmed(e);
+                        }
+                    });
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                gestureDetector.onTouchEvent(motionEvent);
+                return true;
+            }
+
+        });
+
     }
 
     void setWords(List<Word> words) {
         mWords = words;
         notifyDataSetChanged();
+    }
+
+    public interface  HandleWordClick {
+        void editItem(Word word);
+        void OnActivityResult(int requestCode, int resultCode, @Nullable Intent data);
     }
 
     @Override

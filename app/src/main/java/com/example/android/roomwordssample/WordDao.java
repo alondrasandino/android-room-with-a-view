@@ -20,6 +20,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -41,12 +42,14 @@ public interface WordDao {
     // we are notified whenever any of the database contents have changed.
     @Query("SELECT * from word_table ORDER BY word ASC")
     LiveData<List<Word>> getAlphabetizedWords();
-
     // We do not need a conflict strategy, because the word is our primary key, and you cannot
     // add two items with the same primary key to the database. If the table has more than one
     // column, you can use @Insert(onConflict = OnConflictStrategy.REPLACE) to update a row.
     @Insert
     void insert(Word word);
+
+    @Update
+    void updateWord(Word word);
 
     @Query("DELETE FROM word_table")
     void deleteAll();

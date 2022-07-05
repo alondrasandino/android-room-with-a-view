@@ -35,10 +35,14 @@ import androidx.annotation.NonNull;
 @Entity(tableName = "word_table")
 public class Word {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    public int uid;
     @NonNull
     @ColumnInfo(name = "word")
     private String mWord;
+
+    @ColumnInfo(name = "image")
+    public String image;
 
     public Word(@NonNull String word) {
         this.mWord = word;
